@@ -60,7 +60,7 @@ def gen_primes():
 
 
 def main() -> int:
-    """prime decompositions approach, ~65ms"""
+    """prime decompositions approach, ~20ms"""
 
     target = 20
 
@@ -74,10 +74,8 @@ def prod(lst: list) -> int:
 
 def get_divisors(target: int) -> list:
     """returns divisors"""
-    # permutations of all lengths not working
 
     divisors = []
-
     for i in range(2, target + 1):
         primes = gen_primes()
         combs = []
@@ -85,9 +83,7 @@ def get_divisors(target: int) -> list:
         break_inner = False
 
         if len(divisors) > 1:
-            for j in range(1, len(divisors) + 1):
-                els = [list(x) for x in combinations(divisors, j)]
-                combs.extend(els)
+            combs = get_combinations(divisors, 1, len(divisors) + 1)
             for comb in combs:
                 if i == prod(comb):
                     break_outer = True
@@ -99,9 +95,7 @@ def get_divisors(target: int) -> list:
                 divisors.append(i)
                 break_outer = True
                 break
-            for j in range(1, len(divisors) + 1):
-                els = [list(x) for x in combinations(divisors + [prime], j)]
-                combs.extend(els)
+            combs = get_combinations(divisors, 1, len(divisors) + 1, prime)
             for comb in combs:
                 if i == prod(comb):
                     divisors.append(prime)
@@ -116,6 +110,26 @@ def get_divisors(target: int) -> list:
 
     print(divisors)
     return divisors
+
+
+def get_combinations(
+    divisors: list,
+    start: int = 1,
+    end: int = None,
+    prime: int = None,
+) -> list:
+    """gets combinations"""
+
+    combs = []
+    # protect divisors because it's a mutable
+    _divisors = divisors[:]
+    if prime:
+        _divisors.append(prime)
+        end += 1
+    for i in range(start, end):
+        elements = [list(x) for x in combinations(_divisors, i)]
+        combs.extend(elements)
+    return combs
 
 
 if __name__ == "__main__":
